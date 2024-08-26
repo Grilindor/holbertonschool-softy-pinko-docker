@@ -1,0 +1,38 @@
+version: '3'
+services:
+  front-end:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    image: softy-pinko-frontend:task5
+    depends_on:
+      - back-end
+    # Suppression du mapping de ports, car il sera géré par le proxy
+    networks:
+      - app-network
+
+  back-end:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    image: softy-pinko-backend:task5
+    networks:
+      - app-network
+    # Suppression du mapping de ports, car il sera géré par le proxy
+
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+    image: softy-pinko-proxy:task5
+    ports:
+      - "80:80"  # Le proxy expose le port 80 sur l'hôte
+    depends_on:
+      - front-end
+      - back-end
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
